@@ -53,8 +53,9 @@ class Perceptron:
         """
         ## 逐批次训练
         - 若批次内含有不一致的样本:
-            - **`w = w + lr * (\sum {y_i * x_i})`**
-            - **`b = b + lr * (\sum {y_i})`**
+            - **`w = w + lr * (\\average {y_i * x_i})`**
+            - **`b = b + lr * (\\average {y_i})`**
+                - **`\\sum`** 和 **`\\average`** 的版本均存在
         - input:
             - **`x_batch`**: 训练样本的特征向量的集合, shape=(number,dimension)
             - **`y_batch`**: 训练样本的标记值的集合
