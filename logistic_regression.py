@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.special import softmax
+from scipy.special import expit
 
 class LogisticRegression:
 
@@ -23,13 +23,13 @@ class LogisticRegression:
     def predict(self, x:np.ndarray):
         """
         ## 单次推理
-        - **`y = softmax(w * x + b)`**
+        - **`y = sigmoid(w * x + b)`**
         - input:
             - **`x`**: 输入特征向量
         - output:
             - **`y`**: 输出推理结果\in(0,1)
         """
-        return softmax(np.dot(self.w, x) + self.b)
+        return expit(np.dot(self.w, x) + self.b)
     
 
     def train_sample_wise(self, x:np.ndarray, y:int):
@@ -104,3 +104,87 @@ class LogisticRegression:
                 X_batch = X_shuffled[idx:end_idx]
                 y_batch = y_shuffled[idx:end_idx]
                 self.train_batch_wise(X_batch, y_batch)
+
+# 示例（基本沿用Perceptron）
+if __name__ == "__main__":
+    # 加载一组线性可分的数据集
+    data_path = "examples/linearly_separable_data.npz"
+    data = np.load(data_path)
+    X = data['X']
+    y = data['y']
+    # 修改原Perceptron标记，以符合逻辑回归的格式
+    y = np.where(y == -1, 0, 1)
+
+    print(f"Data loaded from: {data_path}")
+    print(f"Total samples: {X.shape[0]}")
+    
+    # 划分训练集和测试集（前50正+50负训练，后10正+10负测试）
+    pos_idx = np.where(y == 1)[0]
+    neg_idx = np.where(y == 0)[0]
+
+    train_pos_idx = pos_idx[:50]
+    test_pos_idx = pos_idx[50:60]
+    train_neg_idx = neg_idx[:50]
+    test_neg_idx = neg_idx[50:60]
+
+    train_idx = np.concatenate([train_pos_idx, train_neg_idx])
+    test_idx = np.concatenate([test_pos_idx, test_neg_idx])
+    
+    X_train, y_train = X[train_idx], y[train_idx]
+    X_test, y_test = X[test_idx], y[test_idx]
+    
+    print(f"Training set: {len(X_train)} samples (50 positive, 50 negative)")
+    print(f"Test set: {len(X_test)} samples (10 positive, 10 negative)")
+    print()
+    
+    # 训练sample-wise模型
+    lr = 0.1
+    logistic_sample = LogisticRegression(lr=lr)
+    print("Training sample-wise...")
+    logistic_sample.train(X_train, y_train, config="sample-wise")
+    
+    # 训练batch-wise模型
+    logistic_batch = LogisticRegression(lr=lr)
+    batch_size = 10
+    print(f"Training batch-wise (batch_size={batch_size})...")
+    logistic_batch.train(X_train, y_train, config="batch-wise", batch_size=batch_size)
+    
+    # 测试
+    pred_sample = np.array([logistic_sample.predict(x) for x in X_test])
+    pred_batch = np.array([logistic_batch.predict(x) for x in X_test])
+    
+    acc_sample = np.mean((pred_sample >= 0.5).astype(int) == y_test) * 100
+    acc_batch = np.mean((pred_batch >= 0.5).astype(int) == y_test) * 100
+    
+    # 输出结果
+    print("\n" + "="*50)
+    print("TEST RESULTS")
+    print("="*50)
+    print(f"Sample-wise model:")
+    print(f"  w = [{logistic_sample.w[0]:.3f}, {logistic_sample.w[1]:.3f}], b = {logistic_sample.b:.3f}")
+    print(f"  Test accuracy: {acc_sample:.2f}%")
+    print(f"\nBatch-wise model (batch_size={batch_size}):")
+    print(f"  w = [{logistic_batch.w[0]:.3f}, {logistic_batch.w[1]:.3f}], b = {logistic_batch.b:.3f}")
+    print(f"  Test accuracy: {acc_batch:.2f}%")
+
+
+# 预期输出：
+
+# Data loaded from: examples/linearly_separable_data.npz
+# Total samples: 120
+# Training set: 100 samples (50 positive, 50 negative)
+# Test set: 20 samples (10 positive, 10 negative)
+
+# Training sample-wise...
+# Training batch-wise (batch_size=10)...
+
+# ==================================================
+# TEST RESULTS
+# ==================================================
+# Sample-wise model:
+#   w = [1.803, -0.397], b = 0.097
+#   Test accuracy: 100.00%
+
+# Batch-wise model (batch_size=10):
+#   w = [0.653, -0.155], b = 0.023
+#   Test accuracy: 100.00%
