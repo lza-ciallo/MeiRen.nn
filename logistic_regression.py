@@ -75,6 +75,7 @@ class LogisticRegression:
         self.w -= self.lr * loss_w / x_batch.shape[0]
         self.b -= self.lr * loss_b / x_batch.shape[0]
 
+
     def train(self, X:np.ndarray, y:np.ndarray, config:str="sample-wise", batch_size:int=None):
         """
         ## 训练
