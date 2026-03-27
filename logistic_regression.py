@@ -105,6 +105,7 @@ class LogisticRegression:
                 y_batch = y_shuffled[idx:end_idx]
                 self.train_batch_wise(X_batch, y_batch)
 
+
 # 示例（基本沿用Perceptron）
 if __name__ == "__main__":
     # 加载一组线性可分的数据集
