@@ -169,3 +169,25 @@ if __name__ == "__main__":
     print(f"\nBatch-wise model (batch_size={batch_size}):")
     print(f"  w = [{perceptron_batch.w[0]:.3f}, {perceptron_batch.w[1]:.3f}], b = {perceptron_batch.b:.3f}")
     print(f"  Test accuracy: {acc_batch:.2f}%")
+
+
+# 预期输出：
+
+# Data loaded from: examples/linearly_separable_data.npz
+# Total samples: 120
+# Training set: 100 samples (50 positive, 50 negative)
+# Test set: 20 samples (10 positive, 10 negative)
+
+# Training sample-wise...
+# Training batch-wise (batch_size=10)...
+
+# ==================================================
+# TEST RESULTS
+# ==================================================
+# Sample-wise model:
+#   w = [0.357, -0.076], b = 0.100
+#   Test accuracy: 100.00%
+
+# Batch-wise model (batch_size=10):
+#   w = [0.299, -0.373], b = 0.100
+#   Test accuracy: 95.00%
