@@ -111,6 +111,7 @@ class Perceptron:
 
 # 示例
 if __name__ == "__main__":
+    # 加载一组线性可分的数据集
     data_path = "examples/perceptron_data.npz"
     data = np.load(data_path)
     X = data['X']
